@@ -42,6 +42,7 @@ const events = [
 
 const Schedule = () => {
   const [view, setView] = useState<View>("month") 
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   return (
     <div style={{ height: "500px", padding: "1rem" }}>
@@ -49,7 +50,9 @@ const Schedule = () => {
         localizer={localizer}
         events={events}
         view={view}
+        date={currentDate}
         onView={(newView) => setView(newView)}
+        onNavigate={(date) => setCurrentDate(date)}
         startAccessor="start"
         endAccessor="end"
         style={{ height: "100%" }}
