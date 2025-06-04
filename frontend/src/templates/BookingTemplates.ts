@@ -23,7 +23,7 @@ const bookingTemplates: BookingTemplate[] = [
         recurrence: {
             allowed: true,
             defaultFreq: 'WEEKLY',
-        },
+        }, 
         resources: ['Teacher'],
     },
     {
@@ -45,6 +45,9 @@ const bookingTemplates: BookingTemplate[] = [
             },
             { id: 'stylist', label: 'Preferred Stylist', type: 'text' },
         ],
+        recurrence: {
+            allowed: false,
+        }, 
         resources: ['Stylist'],
     }
 ];
