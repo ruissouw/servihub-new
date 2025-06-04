@@ -46,7 +46,8 @@ const bookingTemplates: BookingTemplate[] = [
             { id: 'stylist', label: 'Preferred Stylist', type: 'text' },
         ],
         recurrence: {
-            allowed: false,
+            allowed: true,
+            defaultFreq: 'MONTHLY'
         }, 
         resources: ['Stylist'],
     }
