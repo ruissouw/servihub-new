@@ -6,7 +6,9 @@ import { enUS } from 'date-fns/locale/en-US'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import bookingTemplates from "../templates/BookingTemplates";
 import type { BookingEvent, BookingTemplate } from "@/types"
-import mockEvents from '../data/events'
+import mockBookingEvents from '@/data/events'
+import DynamicForm from './DynamicForm'
+import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 
 const locales = { 'en-US': enUS }
 
@@ -22,7 +24,8 @@ const localizer = dateFnsLocalizer({
 const BookingForm: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<RBCEvent | null>(null)
   const [view, setView] = useState<View>("month") 
-  const [template, setTemplate] = useState<BookingTemplate | null>(bookingTemplates[0]);
+  const [template, setTemplate] = useState<BookingTemplate>(bookingTemplates[0]);
+  const [recurrence, setRecurrence] = useState<string | null>(null);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [events, setEvents] = useState<RBCEvent[]>([]);
   const [date, setDate] = useState<Date>(new Date());
@@ -45,7 +48,7 @@ const BookingForm: React.FC = () => {
 
       const title = window.prompt('New Event name');
       if (title) {
-        setEvents((prev) => [...prev, { start, end, title }]);
+        setSelectedSlot({ start, end, title });
       }
     },
     [view, setView, setDate, setEvents]
@@ -58,39 +61,43 @@ const BookingForm: React.FC = () => {
   )
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
+
     if (!template || !selectedSlot) {
-      alert('Please select a service and time slot')
-      return
+      alert('Please select a service and time slot');
+      return;
     }
 
-    alert(`Booked ${template.label} at ${selectedSlot.start.toLocaleString()}`)
-  }
+    const { start, end } = selectedSlot;
+    alert(`Booked ${template.label} from ${start?.toLocaleString()} to ${end?.toLocaleString()}`);
+  };
+
 
   return (
-    <div className="p-4 space-y-6">
-      <select
-        className="border p-2 rounded"
-        value={template?.id || ""}
-        onChange={(e) => {
-          const selectedTemplate = bookingTemplates.find(t => t.id === e.target.value);
-          setTemplate(selectedTemplate || null);
-        }}
+    <form onSubmit={handleSubmit} className="space-y-6 p-4">
+      <Select
+        key='template'
+        onValueChange={(t) => {
+                        const temp = findTemplate(t);
+                        if (temp) setTemplate(temp);
+                        else alert("Template not found!");
+                      }}
+        value={template.id}
       >
-        <option value="">Select a Service</option>
-        {bookingTemplates.map((t) => (
-          <option key={t.id} value={t.id}>
-            {t.label}
-          </option>
-        ))}
-      </select>
-
-
-      {template && (
-        <div style={{ height: '400px' }}>
+        <SelectTrigger>{template.label || "Select a service"}</SelectTrigger>
+        <SelectContent>
+          {bookingTemplates?.map(t => (
+            <SelectItem key={t.id} value={t.id}>
+              {t.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <DynamicForm fields={template.fields} />
+      <div style={{ height: '500px' }}>
           <Calendar
             localizer={localizer}
-            events={mockEvents[template.id]}
+            events={mockBookingEvents[template.id]}
             view={view}
             date={date}
             onView={(newView) => setView(newView)}
@@ -98,26 +105,18 @@ const BookingForm: React.FC = () => {
             selectable
             startAccessor="start"
             endAccessor="end"
+            titleAccessor={(event: BookingEvent) => `${event.id}`}
             style={{ height: "100%" }}
             onSelectEvent={handleSelectEvent}
             onSelectSlot={handleSelectSlot}
           />
       </div>
-    )}
-
-      {selectedSlot &&(<button
-        className="bg-blue-500 text-white py-2 px-4 rounded"
-        onClick={handleSubmit}
-      >
-        Submit Booking
-      </button>)}
-
-      {selectedSlot?.start && (
-        <div className="text-green-600">
-          Selected slot: {selectedSlot.start.toLocaleString()}
-        </div>
+      {selectedSlot && (
+        <button onSubmit={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded">
+          Make Booking
+        </button>
       )}
-    </div>
+    </form>
   )
 }
 
