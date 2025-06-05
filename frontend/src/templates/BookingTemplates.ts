@@ -13,12 +13,24 @@ const bookingTemplates: BookingTemplate[] = [
                 type: 'select',
                 required: true,
                 options: [
-                    { value: 'math', label: 'Math' },
-                    { value: 'english', label: 'English' },
-                    { value: 'science', label: 'Science' },
+                    { value: 'Math', label: 'Math' },
+                    { value: 'English', label: 'English' },
+                    { value: 'Science', label: 'Science' },
                 ],
             },
             { id: 'maxSlots', label: 'Max Slots', type: 'number', min: 1, max: 12, required: true },
+            {   
+                id: 'recurrenceType', 
+                label: 'Recurrence Type', 
+                type: 'select',
+                required: true,
+                options: [
+                    { value: "One-off booking", label: "One-off booking" },
+                    { value: "Daily", label: "Daily" },
+                    { value: "Weekly", label: "Weekly" },
+                    { value: "Monthly", label: "Monthly" },
+                ],
+            },
         ],
         recurrence: {
             allowed: true,
@@ -45,6 +57,18 @@ const bookingTemplates: BookingTemplate[] = [
             },
             { id: 'stylist', label: 'Preferred Stylist', type: 'text' },
             { id: 'maxSlots', label: 'Max Slots', type: 'number', min: 1, max: 12, required: true },
+            {   
+                id: 'recurrenceType', 
+                label: 'Recurrence Type', 
+                type: 'select',
+                required: true,
+                options: [
+                    { value: "One-off booking", label: "One-off booking" },
+                    { value: "Daily", label: "Daily" },
+                    { value: "Weekly", label: "Weekly" },
+                    { value: "Monthly", label: "Monthly" },
+                ],
+            },
         ],
         recurrence: {
             allowed: true,
