@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import type { Event as RBCEvent, View } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, addDays, addWeeks, addMonths } from 'date-fns'
@@ -10,6 +10,7 @@ import mockBookingEvents from '@/data/events'
 import DynamicForm from './DynamicForm'
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { v4 as uuidv4 } from 'uuid';
+import { useBookingStore } from '@/stores/useBookingStore'
 
 const locales = { 'en-US': enUS }
 
@@ -29,6 +30,14 @@ const BookingForm: React.FC = () => {
   const [resourceIds, setResourceIds] = useState<string[]>([])
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [date, setDate] = useState<Date>(new Date());
+
+  const addBookings = useBookingStore((state) => state.addBookings);
+  const allBookings = useBookingStore((state) => state.bookings)
+
+  const bookings = useMemo(() => {
+    if (!template.id) return []
+    return allBookings.filter(b => b.templateId === template.id)
+  }, [allBookings, template.id]);
 
   const findTemplate = (id : string) => bookingTemplates.find(t => t.id === id);
 
@@ -74,6 +83,7 @@ const BookingForm: React.FC = () => {
     const { start, end } = selectedSlot
 
     const freq = formData.recurrenceType;
+    console.log(formData.recurrenceType);
     const upperBound = parseInt(formData.maxSlots, 10);
 
     const generatedBookings = [];
@@ -104,14 +114,15 @@ const BookingForm: React.FC = () => {
         templateId: template.id,
         start: newStart,
         end: newEnd,
-        status: 'pending',
+        status: 'pending' as const,
         resourceIds,
         customFields: formData,
       });
     }
 
     console.log("Bookings:", generatedBookings);
-
+    addBookings(generatedBookings);
+    setSelectedSlot(null);
   };
 
   const filteredFields = template.fields.filter(
@@ -148,7 +159,7 @@ const BookingForm: React.FC = () => {
       <div style={{ height: '500px' }}>
           <Calendar
             localizer={localizer}
-            events={[...mockBookingEvents[template.id], ...(selectedSlot ? [selectedSlot] : [])]}
+            events={[...(bookings || []), ...(selectedSlot ? [selectedSlot] : [])]}
             view={view}
             date={date}
             onView={(newView) => setView(newView)}
@@ -156,7 +167,7 @@ const BookingForm: React.FC = () => {
             selectable
             startAccessor="start"
             endAccessor="end"
-            titleAccessor={(event: BookingEvent) => `${event.id}`}
+            titleAccessor={(event: BookingEvent) => `${findTemplate(event.templateId)?.label}`}
             style={{ height: "100%" }}
             onSelectSlot={handleSelectSlot}
           />
