@@ -8,7 +8,7 @@ import type { Field } from 'react-hook-form';
 
 type Props = {
   fields: FieldSpec[];
-};
+}
 
 const DynamicForm = ({ fields }: Props) => {
   const [values, setValues] = useState<Record<string, any>>({});
@@ -31,7 +31,9 @@ const DynamicForm = ({ fields }: Props) => {
                 placeholder={field.label}
                 value={val}
                 required={field.required}
-                onChange={(e) => handleChange(field.id, e.target.value)}
+                min={field?.min}
+                max={field?.max}
+                onChange={e => handleChange(field.id, e.target.valueAsNumber)}
               />
             );
           case 'textarea':
@@ -40,14 +42,14 @@ const DynamicForm = ({ fields }: Props) => {
                 key={field.id}
                 placeholder={field.label}
                 value={val}
-                onChange={(e) => handleChange(field.id, e.target.value)}
+                onChange={e => handleChange(field.id, e.target.value)}
               />
             );
           case 'select':
             return (
               <Select
                 key={field.id}
-                onValueChange={(v) => handleChange(field.id, v)}
+                onValueChange={v => handleChange(field.id, v)}
                 value={val}
               >
                 <SelectTrigger>{val || field.label}</SelectTrigger>
@@ -65,7 +67,7 @@ const DynamicForm = ({ fields }: Props) => {
               <div key={field.id} className="flex items-center space-x-2">
                 <Switch
                   checked={val}
-                  onCheckedChange={(v) => handleChange(field.id, v)}
+                  onCheckedChange={v => handleChange(field.id, v)}
                 />
                 <label>{field.label}</label>
               </div>
