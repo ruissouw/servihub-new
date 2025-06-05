@@ -18,7 +18,7 @@ const bookingTemplates: BookingTemplate[] = [
                     { value: 'science', label: 'Science' },
                 ],
             },
-            { id: 'maxSlots', label: 'Max Slots', type: 'number', min: 1, required: true },
+            { id: 'maxSlots', label: 'Max Slots', type: 'number', min: 1, max: 12, required: true },
         ],
         recurrence: {
             allowed: true,
@@ -44,6 +44,7 @@ const bookingTemplates: BookingTemplate[] = [
                 ],
             },
             { id: 'stylist', label: 'Preferred Stylist', type: 'text' },
+            { id: 'maxSlots', label: 'Max Slots', type: 'number', min: 1, max: 12, required: true },
         ],
         recurrence: {
             allowed: true,
