@@ -25,10 +25,12 @@ const BookingForm: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<RBCEvent | null>(null)
   const [view, setView] = useState<View>("month") 
   const [template, setTemplate] = useState<BookingTemplate>(bookingTemplates[0]);
-  const [recurrence, setRecurrence] = useState<string | null>(null);
+  const [recurrence, setRecurrence] = useState<string>("One-off booking");
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [events, setEvents] = useState<RBCEvent[]>([]);
   const [date, setDate] = useState<Date>(new Date());
+
+  const recurrenceTypes: string[] = ["One-off booking", "Daily", "Weekly", "Monthly"];
 
   const handleNavigate = (newDate: Date) => {
     setDate(newDate);
@@ -79,8 +81,7 @@ const BookingForm: React.FC = () => {
         key='template'
         onValueChange={(t) => {
                         const temp = findTemplate(t);
-                        if (temp) setTemplate(temp);
-                        else alert("Template not found!");
+                        temp ? setTemplate(temp) : console.log("Template not found!");
                       }}
         value={template.id}
       >
@@ -111,8 +112,22 @@ const BookingForm: React.FC = () => {
             onSelectSlot={handleSelectSlot}
           />
       </div>
+      <Select
+        key="recurrence"
+        onValueChange={(r) => setRecurrence(r)}
+        value={recurrence}
+      >
+        <SelectTrigger>{recurrence || "Select frequency"}</SelectTrigger>
+        <SelectContent>
+          {recurrenceTypes.map(r => (
+            <SelectItem key={r} value={r}>
+              {r}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       {selectedSlot && (
-        <button onSubmit={handleSubmit} className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
           Make Booking
         </button>
       )}
