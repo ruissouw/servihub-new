@@ -24,11 +24,23 @@ const DynamicForm = ({ fields, formData, setFormData }: Props) => {
         const val = formData[field.id] ?? '';
         switch (field.type) {
           case 'text':
+            return (
+              <Input
+                key={field.id}
+                type='text'
+                placeholder={field.label}
+                value={val}
+                required={field.required}
+                min={field?.min}
+                max={field?.max}
+                onChange={e => handleChange(field.id, e.target.value)}
+              />
+            );
           case 'number':
             return (
               <Input
                 key={field.id}
-                type={field.type === 'number' ? 'number' : 'text'}
+                type='number'
                 placeholder={field.label}
                 value={val}
                 required={field.required}
