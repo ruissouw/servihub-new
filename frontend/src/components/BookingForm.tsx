@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import type { Event as RBCEvent, View } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, addDays, addWeeks, addMonths } from 'date-fns'
@@ -23,7 +23,7 @@ const localizer = dateFnsLocalizer({
 
 
 const BookingForm: React.FC = () => {
-  const [selectedSlot, setSelectedSlot] = useState<RBCEvent | null>(null)
+  const [selectedSlot, setSelectedSlot] = useState<BookingEvent | null>(null);
   const [view, setView] = useState<View>("month") 
   const [template, setTemplate] = useState<BookingTemplate>(bookingTemplates[0]);
   const [resourceIds, setResourceIds] = useState<string[]>([])
@@ -40,7 +40,15 @@ const BookingForm: React.FC = () => {
         return;
       }
 
-      setSelectedSlot({ start, end });
+      setSelectedSlot({
+        id: "Current Booking",
+        templateId: template.id,
+        start,
+        end,
+        status: "pending",
+        resourceIds: [],
+        customFields: {},
+      });
     },
     [view, setView, setDate]
   );
@@ -140,7 +148,7 @@ const BookingForm: React.FC = () => {
       <div style={{ height: '500px' }}>
           <Calendar
             localizer={localizer}
-            events={mockBookingEvents[template.id]}
+            events={[...mockBookingEvents[template.id], ...(selectedSlot ? [selectedSlot] : [])]}
             view={view}
             date={date}
             onView={(newView) => setView(newView)}
