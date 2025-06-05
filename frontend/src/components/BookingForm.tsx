@@ -56,17 +56,18 @@ const BookingForm: React.FC = () => {
     [view, setView, setDate, setEvents]
   );
 
-
+  /*
   const handleSelectEvent = useCallback(
     (event: RBCEvent) => window.alert(event.title),
     []
   )
+    */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!template || !selectedSlot) {
-      alert('Please select a service and time slot');
+      console.log('Please select a service and time slot');
       return;
     }
 
@@ -94,7 +95,13 @@ const BookingForm: React.FC = () => {
           ))}
         </SelectContent>
       </Select>
-      <DynamicForm fields={template.fields} />
+
+      <DynamicForm
+        fields={template.fields}
+        formData={formData}
+        setFormData={setFormData}
+      />
+
       <div style={{ height: '500px' }}>
           <Calendar
             localizer={localizer}
@@ -108,7 +115,7 @@ const BookingForm: React.FC = () => {
             endAccessor="end"
             titleAccessor={(event: BookingEvent) => `${event.id}`}
             style={{ height: "100%" }}
-            onSelectEvent={handleSelectEvent}
+            //onSelectEvent={handleSelectEvent}
             onSelectSlot={handleSelectSlot}
           />
       </div>

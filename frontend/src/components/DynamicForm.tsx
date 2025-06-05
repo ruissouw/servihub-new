@@ -8,19 +8,20 @@ import type { Field } from 'react-hook-form';
 
 type Props = {
   fields: FieldSpec[];
-}
+  formData: Record<string, any>;
+  setFormData: (v: Record<string, any>) => void;
+};
 
-const DynamicForm = ({ fields }: Props) => {
-  const [values, setValues] = useState<Record<string, any>>({});
 
+const DynamicForm = ({ fields, formData, setFormData }: Props) => {
   const handleChange = (id: string, value: any) => {
-    setValues({ ...values, [id]: value });
+    setFormData({ ...formData, [id]: value });
   };
 
   return (
     <div className="space-y-4">
       {fields.map((field) => {
-        const val = values[field.id] ?? '';
+        const val = formData[field.id] ?? '';
         switch (field.type) {
           case 'text':
           case 'number':
