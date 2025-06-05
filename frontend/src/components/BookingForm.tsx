@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import type { Event as RBCEvent, View } from 'react-big-calendar'
-import { format, parse, startOfWeek, getDay } from 'date-fns'
+import { format, parse, startOfWeek, getDay, addDays, addWeeks, addMonths } from 'date-fns'
 import { enUS } from 'date-fns/locale/en-US'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import bookingTemplates from "../templates/BookingTemplates";
@@ -9,6 +9,7 @@ import type { BookingEvent, BookingTemplate } from "@/types"
 import mockBookingEvents from '@/data/events'
 import DynamicForm from './DynamicForm'
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
+import { v4 as uuidv4 } from 'uuid';
 
 const locales = { 'en-US': enUS }
 
@@ -25,18 +26,9 @@ const BookingForm: React.FC = () => {
   const [selectedSlot, setSelectedSlot] = useState<RBCEvent | null>(null)
   const [view, setView] = useState<View>("month") 
   const [template, setTemplate] = useState<BookingTemplate>(bookingTemplates[0]);
-  const [recurrence, setRecurrence] = useState<string>("One-off booking");
+  const [resourceIds, setResourceIds] = useState<string[]>([])
   const [formData, setFormData] = useState<Record<string, any>>({});
-  const [events, setEvents] = useState<RBCEvent[]>([]);
   const [date, setDate] = useState<Date>(new Date());
-
-  const recurrenceTypes: string[] = ["One-off booking", "Daily", "Weekly", "Monthly"];
-
-  const handleNavigate = (newDate: Date) => {
-    setDate(newDate);
-  };
-
-
 
   const findTemplate = (id : string) => bookingTemplates.find(t => t.id === id);
 
@@ -48,32 +40,75 @@ const BookingForm: React.FC = () => {
         return;
       }
 
-      const title = window.prompt('New Event name');
-      if (title) {
-        setSelectedSlot({ start, end, title });
-      }
+      setSelectedSlot({ start, end });
     },
-    [view, setView, setDate, setEvents]
+    [view, setView, setDate]
   );
-
-  /*
-  const handleSelectEvent = useCallback(
-    (event: RBCEvent) => window.alert(event.title),
-    []
-  )
-    */
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!template || !selectedSlot) {
-      console.log('Please select a service and time slot');
+    if (!selectedSlot) {
+      console.log("No time slot selected"); 
       return;
     }
 
-    const { start, end } = selectedSlot;
-    alert(`Booked ${template.label} from ${start?.toLocaleString()} to ${end?.toLocaleString()}`);
+    if (!template) {
+      console.log("No template selected");
+      return;
+    }
+
+    if (!selectedSlot?.start || !selectedSlot?.end) {
+      console.error("Invalid time slot");
+      return;
+    }
+
+    const { start, end } = selectedSlot
+
+    const freq = formData.recurrenceType;
+    const upperBound = parseInt(formData.maxSlots, 10);
+
+    const generatedBookings = [];
+
+    for (let i = 0; i < upperBound; i++) {
+      let newStart = start;
+      let newEnd = end;
+
+      switch (freq) {
+        case "DAILY":
+          newStart = addDays(start, i);
+          newEnd = addDays(end, i);
+          break;
+        case "WEEKLY":
+          newStart = addWeeks(start, i);
+          newEnd = addWeeks(end, i);
+          break;
+        case "MONTHLY":
+          newStart = addMonths(start, i);
+          newEnd = addMonths(end, i);
+          break;
+        default:
+          break; 
+      }
+
+      generatedBookings.push({
+        id: uuidv4(),
+        templateId: template.id,
+        start: newStart,
+        end: newEnd,
+        status: 'pending',
+        resourceIds,
+        customFields: formData,
+      });
+    }
+
+    console.log("Bookings:", generatedBookings);
+
   };
+
+  const filteredFields = template.fields.filter(
+    field => !(field.id === 'recurrenceType' && !template.recurrence?.allowed)
+  );
 
 
   return (
@@ -97,7 +132,7 @@ const BookingForm: React.FC = () => {
       </Select>
 
       <DynamicForm
-        fields={template.fields}
+        fields={filteredFields}
         formData={formData}
         setFormData={setFormData}
       />
@@ -115,24 +150,9 @@ const BookingForm: React.FC = () => {
             endAccessor="end"
             titleAccessor={(event: BookingEvent) => `${event.id}`}
             style={{ height: "100%" }}
-            //onSelectEvent={handleSelectEvent}
             onSelectSlot={handleSelectSlot}
           />
       </div>
-      <Select
-        key="recurrence"
-        onValueChange={(r) => setRecurrence(r)}
-        value={recurrence}
-      >
-        <SelectTrigger>{recurrence || "Select frequency"}</SelectTrigger>
-        <SelectContent>
-          {recurrenceTypes.map(r => (
-            <SelectItem key={r} value={r}>
-              {r}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
       {selectedSlot && (
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
           Make Booking
