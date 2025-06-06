@@ -1,6 +1,6 @@
 # ServiHub
 ServiHub serves dozens of industries—tuition centres, salons, clinics, studios—each with
-wildly different scheduling needs. 
+wildly different scheduling needs. It is a platform where clients can make bookings for services which can accept or reject their requests.
 
 ## Features
 - Create a booking for a particular service
@@ -63,6 +63,7 @@ Follow the steps below to get this project running on your local machine.
 ### Edit View (Customers)
 - Customers are taken to the same form page except with the fields pre filled in
 - Simply drag and drop the desired date/timeslot
+- Note that if the booking was approved before, it will be pending again
 
 ### Make Bookings (Customers)
 - Firstly, select the service you wish to book
@@ -102,3 +103,9 @@ Follow the steps below to get this project running on your local machine.
 ## Block Certain Timings
 - It is unfeasible for a tuition centre to operate 24/7
 - Services will be able to specify timings of their services
+
+## Messaging System
+- To improve clarity on why a booking is rejected/cancelled/rescheduled
+
+## Priority Status
+- Since some clients are more important/have more pressing needs than others
