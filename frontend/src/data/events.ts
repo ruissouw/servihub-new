@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { BookingEvent } from '../types'; // Update path to where BookingEvent is defined
 
-const mockBookingEvents: Record<string, BookingEvent[]> = {
-  "tuition-class": [
+const mockBookingEvents: BookingEvent[] = [
     {
       id: uuidv4(),
       templateId: "tuition-class",
@@ -51,8 +50,6 @@ const mockBookingEvents: Record<string, BookingEvent[]> = {
         subject: "Math",
       },
     },
-  ],
-  "salon-appointment": [
     {
       id: uuidv4(),
       templateId: "salon-appointment",
@@ -77,7 +74,6 @@ const mockBookingEvents: Record<string, BookingEvent[]> = {
         stylist: "Jamie",
       },
     },
-  ],
-};
+  ];
 
 export default mockBookingEvents;
