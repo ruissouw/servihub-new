@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useMemo, useEffect } from 'react'
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import type { Event as RBCEvent, View } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay, addDays, addWeeks, addMonths } from 'date-fns'
@@ -6,11 +6,13 @@ import { enUS } from 'date-fns/locale/en-US'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import bookingTemplates from "../templates/BookingTemplates";
 import type { BookingEvent, BookingTemplate } from "@/types"
-import mockBookingEvents from '@/data/events'
 import DynamicForm from './DynamicForm'
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/select";
 import { v4 as uuidv4 } from 'uuid';
 import { useBookingStore } from '@/stores/useBookingStore'
+import { useParams } from 'react-router-dom'
+import { Button } from './ui/button'
+
 
 const locales = { 'en-US': enUS }
 
@@ -31,13 +33,31 @@ const BookingForm: React.FC = () => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [date, setDate] = useState<Date>(new Date());
 
+  const { id } = useParams();
+  const getBookingById = useBookingStore((state) => state.getBookingById);
+  const updateBooking = useBookingStore((state) => state.updateBooking);
+
+  useEffect(() => {
+    if (id) {
+      const existing = getBookingById(id);
+      if (existing) {
+        setSelectedSlot(existing);
+        setTemplate(findTemplate(existing.templateId) || bookingTemplates[0]);
+        setFormData(existing.customFields);
+        setResourceIds(existing.resourceIds);
+        setDate(existing.start);
+        setView("day");
+      }
+    }
+  }, [id]);
+
   const addBookings = useBookingStore((state) => state.addBookings);
   const allBookings = useBookingStore((state) => state.bookings)
 
-  const bookings = useMemo(() => {
-    if (!template.id) return []
-    return allBookings.filter(b => b.templateId === template.id)
-  }, [allBookings, template.id]);
+  
+  const bookings = useMemo(() => !template.id ? [] : allBookings.filter(b => b.templateId === template.id && b.id !== id), 
+    [allBookings, template.id, id]
+  );
 
   const findTemplate = (id : string) => bookingTemplates.find(t => t.id === id);
 
@@ -49,17 +69,17 @@ const BookingForm: React.FC = () => {
         return;
       }
 
-      setSelectedSlot({
-        id: "Current Booking",
+       setSelectedSlot((prev) => ({
+        id: prev?.id || uuidv4(),
         templateId: template.id,
         start,
         end,
         status: "pending",
-        resourceIds: [],
-        customFields: {},
-      });
+        resourceIds,
+        customFields: formData,
+      }));
     },
-    [view, setView, setDate]
+    [view, setView, setDate, template.id, resourceIds, formData]
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -80,13 +100,17 @@ const BookingForm: React.FC = () => {
       return;
     }
 
+
     const { start, end } = selectedSlot
 
     const freq = formData.recurrenceType;
     console.log(formData.recurrenceType);
-    const upperBound = parseInt(formData.maxSlots, 10);
+    let upperBound = parseInt(formData.maxSlots, 10);
 
     const generatedBookings = [];
+    if (freq === "ONE-OFF BOOKING") {
+        upperBound = 1;
+    }
 
     for (let i = 0; i < upperBound; i++) {
       let newStart = start;
@@ -120,9 +144,18 @@ const BookingForm: React.FC = () => {
       });
     }
 
-    console.log("Bookings:", generatedBookings);
-    addBookings(generatedBookings);
-    setSelectedSlot(null);
+    if (id) {
+      updateBooking({
+        ...selectedSlot,
+        customFields: formData,
+        resourceIds,
+        templateId: template.id,
+      })
+    } else {
+      console.log("Bookings:", generatedBookings);
+      addBookings(generatedBookings);
+      setSelectedSlot(null);
+    }
   };
 
   const filteredFields = template.fields.filter(
@@ -159,7 +192,7 @@ const BookingForm: React.FC = () => {
       <div style={{ height: '500px' }}>
           <Calendar
             localizer={localizer}
-            events={[...(bookings || []), ...(selectedSlot ? [selectedSlot] : [])]}
+            events={[...bookings, ...(selectedSlot ? [selectedSlot] : [])]}
             view={view}
             date={date}
             onView={(newView) => setView(newView)}
@@ -201,9 +234,9 @@ const BookingForm: React.FC = () => {
           />
       </div>
       {selectedSlot && (
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-          Make Booking
-        </button>
+        <Button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+          {id ? "Edit Booking" : "Make Booking"}
+        </Button>
       )}
     </form>
   )
