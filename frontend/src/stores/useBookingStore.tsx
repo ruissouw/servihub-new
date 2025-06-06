@@ -6,9 +6,10 @@ type BookingStore = {
   addBookings: (events: BookingEvent[]) => void
   updateBookingStatus: (ids: string[], newStatus: BookingEvent['status']) => void
   seeded: boolean
-  markSeeded: () => void
+  markSeeded: (bool: boolean) => void
   updateBooking: (updatedEvent: BookingEvent) => void
   getBookingById: (id: string) => BookingEvent | undefined
+  clearBookings: () => void
 }
 
 export const useBookingStore = create<BookingStore>(
@@ -30,7 +31,7 @@ export const useBookingStore = create<BookingStore>(
           ids.includes(event.id) ? { ...event, status: newStatus } : event
         ),
       })),
-    markSeeded: () => set({ seeded: true }),
+    markSeeded: (bool) => set({ seeded: bool }),
     updateBooking: (updated) =>
       set((state) => ({
         bookings: state.bookings.map((b) =>
@@ -40,5 +41,6 @@ export const useBookingStore = create<BookingStore>(
     getBookingById: (id) => {
       return get().bookings.find((event) => event.id === id);
     },
+    clearBookings: () => set({ bookings: [] })
   })
 )
