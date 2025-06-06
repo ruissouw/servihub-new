@@ -34,6 +34,6 @@ export interface BookingEvent {
   end: Date;
   status: 'pending' | 'approved' | 'rejected' | 'cancelled'
   resourceIds: string[];
-  customFields: Record<string, string | number | boolean>;
+  customFields: Record<string, any>;
 }
 
