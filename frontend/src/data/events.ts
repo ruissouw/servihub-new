@@ -1,79 +1,142 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { BookingEvent } from '../types'; // Update path to where BookingEvent is defined
 
-const mockBookingEvents: BookingEvent[] = [
-    {
-      id: uuidv4(),
-      templateId: "tuition-class",
-      start: new Date("2025-06-03T09:00:00+08:00"),
-      end: new Date("2025-06-03T10:30:00+08:00"),
-      status: "pending",
-      resourceIds: ['room-101'],
-      customFields: {
-        teacher: "Mr. Tan",
-        subject: "Math",
-      },
+const mockBookingEvents = [
+  {
+    id: uuidv4(),
+    templateId: 'tuition-class',
+    start: new Date('2025-06-07T10:00:00'), 
+    end: new Date('2025-06-07T11:00:00'),
+    status: "pending" as const,
+    resourceIds: [],
+    customFields: {
+      subject: 'Math',
+      maxSlots: 3,
+      recurrenceType: 'WEEKLY',
     },
-    {
-      id: uuidv4(),
-      templateId: "tuition-class",
-      start: new Date("2025-06-04T11:00:00+08:00"),
-      end: new Date("2025-06-04T12:30:00+08:00"),
-      status: "approved",
-      resourceIds: ['room-102'],
-      customFields: {
-        teacher: "Ms. Lim",
-        subject: "Science",
-      },
+  },
+  {
+    id: uuidv4(),
+    templateId: 'tuition-class',
+    start: new Date('2025-06-14T10:00:00'), 
+    end: new Date('2025-06-14T11:00:00'),
+    status: "pending" as const,
+    resourceIds: [],
+    customFields: {
+      subject: 'Math',
+      maxSlots: 3,
+      recurrenceType: 'WEEKLY',
     },
-    {
-      id: uuidv4(),
-      templateId: "tuition-class",
-      start: new Date("2025-06-03T09:00:00+08:00"),
-      end: new Date("2025-06-03T10:30:00+08:00"),
-      status: "rejected",
-      resourceIds: ['room-101'],
-      customFields: {
-        teacher: "Mr. Tan",
-        subject: "Math",
-      },
+  },
+  {
+    id: uuidv4(),
+    templateId: 'tuition-class',
+    start: new Date('2025-06-21T10:00:00'), 
+    end: new Date('2025-06-21T11:00:00'),
+    status: "pending" as const,
+    resourceIds: [],
+    customFields: {
+      subject: 'Math',
+      maxSlots: 3,
+      recurrenceType: 'WEEKLY',
     },
-    {
-      id: uuidv4(),
-      templateId: "tuition-class",
-      start: new Date("2025-06-03T09:00:00+08:00"),
-      end: new Date("2025-06-03T10:30:00+08:00"),
-      status: 'cancelled',
-      resourceIds: ['room-101'],
-      customFields: {
-        teacher: "Mr. Tan",
-        subject: "Math",
-      },
+  },
+  {
+    id: uuidv4(),
+    templateId: 'salon-appointment',
+    start: new Date('2025-06-08T14:00:00'),
+    end: new Date('2025-06-08T15:00:00'),
+    status: "pending" as const,
+    resourceIds: [],
+    customFields: {
+      serviceType: 'hair',
+      stylist: 'Jane',
+      maxSlots: 3,
+      recurrenceType: 'MONTHLY',
     },
-    {
-      id: uuidv4(),
-      templateId: "salon-appointment",
-      start: new Date("2025-07-03T14:00:00+08:00"),
-      end: new Date("2025-07-03T14:45:00+08:00"),
-      status: 'approved',
-      resourceIds: ['stylist-alex'],
-      customFields: {
-        service: "Haircut",
-        stylist: "Alex",
-      },
+  },
+  {
+    id: uuidv4(),
+    templateId: 'salon-appointment',
+    start: new Date('2025-07-08T14:00:00'),
+    end: new Date('2025-07-08T15:00:00'),
+    status: "pending" as const,
+    resourceIds: [],
+    customFields: {
+      serviceType: 'hair',
+      stylist: 'Jane',
+      maxSlots: 3,
+      recurrenceType: 'MONTHLY',
     },
-    {
-      id: uuidv4(),
-      templateId: "salon-appointment",
-      start: new Date("2025-07-03T15:00:00+08:00"),
-      end: new Date("2025-07-03T16:00:00+08:00"),
-      status: 'approved',
-      resourceIds: ['stylist-jamie'],
-      customFields: {
-        service: "Nail Treatment",
-        stylist: "Jamie",
-      },
+  },
+  {
+    id: uuidv4(),
+    templateId: 'salon-appointment',
+    start: new Date('2025-08-08T14:00:00'),
+    end: new Date('2025-08-08T15:00:00'),
+    status: "pending" as const,
+    resourceIds: [],
+    customFields: {
+      serviceType: 'hair',
+      stylist: 'Jane',
+      maxSlots: 3,
+      recurrenceType: 'MONTHLY',
     },
-  ];
+  },
+  {
+    id: uuidv4(),
+    templateId: 'tuition-class',
+    start: new Date("2025-06-13T09:00:00+08:00"),
+    end: new Date("2025-06-13T09:00:00+10:00"),
+    status: "pending" as const,
+    resourceIds: [],
+    customFields: {
+      subject: 'English',
+      maxSlots: 1,
+      recurrenceType: 'ONE-OFF BOOKING',
+    },
+  },
+  {
+    id: uuidv4(),
+    templateId: 'tuition-class',
+    start: new Date("2025-06-15T09:00:00+08:00"),
+    end: new Date("2025-06-15T09:00:00+10:00"),
+    status: "approved" as const,
+    resourceIds: [],
+    customFields: {
+      subject: 'Science',
+      maxSlots: 1,
+      recurrenceType: 'ONE-OFF BOOKING',
+    },
+  },
+  {
+    id: uuidv4(),
+    templateId: 'salon-appointment',
+    start: new Date("2025-06-16T09:00:00+08:00"),
+    end: new Date("2025-06-16T09:00:00+10:00"),
+    status: "rejected" as const,
+    resourceIds: [],
+    customFields: {
+      serviceType: 'nails',
+      stylist: 'Rachel',
+      maxSlots: 1,
+      recurrenceType: 'ONE-OFF BOOKING',
+    },
+  },
+
+  {
+    id: uuidv4(),
+    templateId: 'salon-appointment',
+    start: new Date("2025-06-17T09:00:00+08:00"),
+    end: new Date("2025-06-17T09:00:00+10:00"),
+    status: "cancelled" as const,
+    resourceIds: [],
+    customFields: {
+      serviceType: 'facial',
+      stylist: 'Alex',
+      maxSlots: 1,
+      recurrenceType: 'ONE-OFF BOOKING',
+    },
+  },
+]
 
 export default mockBookingEvents;
