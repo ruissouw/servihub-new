@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar'
 import type { View } from 'react-big-calendar'
 import {
@@ -10,11 +10,12 @@ import {
 import {enUS} from "date-fns/locale/en-US"
 import "react-big-calendar/lib/css/react-big-calendar.css"
 import { useBookingStore } from '@/stores/useBookingStore'
-import { shallow } from 'zustand/shallow'
 import type { BookingEvent } from "@/types"
 import bookingTemplates from "@/templates/BookingTemplates"
 import mockBookingEvents from "@/data/events"
 import '@/index.css'
+import EventView from "./EventView"
+import { Button } from "./ui/button"
 
 const locales = {
   "en-US": enUS,
@@ -33,7 +34,35 @@ const findTemplate = (id : string) => bookingTemplates.find(t => t.id === id);
 const Schedule = () => {
   const [view, setView] = useState<View>("month") 
   const [currentDate, setCurrentDate] = useState(new Date());
-  const allBookings = useBookingStore((state) => state.bookings)
+  const [markedForDelete, setMarkedForDelete] = useState<BookingEvent[]>([])
+  
+  const seeded = useBookingStore(state => state.seeded)
+  const markSeeded = useBookingStore(state => state.markSeeded)
+  const addBookings = useBookingStore((state) => state.addBookings);
+
+  useEffect(() => {
+      if (!seeded) {
+        const allMockEvents = Object.values(mockBookingEvents).flat()
+        addBookings(allMockEvents)
+        markSeeded()
+      }
+    }, [seeded, addBookings, markSeeded]
+  )
+  const updateBookingStatus = useBookingStore((state) => state.updateBookingStatus)
+  const myBookings = useBookingStore((state) => state.bookings)
+
+  const handleMarkedBookings = (event: BookingEvent) => {
+    if (!markedForDelete.find(e => e.id === event.id)) {
+      setMarkedForDelete([...markedForDelete, event])
+    }
+  }
+
+  const handleCancelAll = () => {
+    console.log("Cancelling: ", markedForDelete);
+    const idsToCancel = markedForDelete.map((event) => event.id);
+    updateBookingStatus(idsToCancel, "cancelled");
+    setMarkedForDelete([]);
+  }
 
   const handleSelectEvent = (event: BookingEvent) => {
     setCurrentDate(new Date(event.start))
@@ -45,7 +74,7 @@ const Schedule = () => {
       <div style={{ height: '500px' }}>
         <Calendar
           localizer={localizer}
-          events={mockBookingEvents['tuition-class']}
+          events={myBookings}
           view={view}
           date={currentDate}
           onView={(newView) => setView(newView)}
@@ -83,8 +112,27 @@ const Schedule = () => {
               },
             }
           }}
+          components={{
+            event: (props) => <EventView {...props} onMarkDelete={handleMarkedBookings} />
+          }}
         />
       </div>
+      {markedForDelete.length > 0 && (
+        <div className="mt-6 space-y-2 p-4 border rounded bg-red-50">
+          <h3 className="text-lg font-semibold">Marked for Deletion</h3>
+          <ul className="list-disc pl-5 text-sm">
+            {markedForDelete.map(event => (
+              <li key={event.id}>{findTemplate(event.templateId)?.label} — {new Date(event.start).toLocaleString()}</li>
+            ))}
+          </ul>
+          <Button
+            onClick={handleCancelAll}
+            className="mt-2 px-4 py-1 rounded bg-red-600 text-white hover:bg-red-700"
+          >
+            {markedForDelete.length > 1 ? "Cancel Bookings" : "Cancel Booking"}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }
