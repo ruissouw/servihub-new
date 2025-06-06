@@ -170,6 +170,34 @@ const BookingForm: React.FC = () => {
             titleAccessor={(event: BookingEvent) => `${findTemplate(event.templateId)?.label}`}
             style={{ height: "100%" }}
             onSelectSlot={handleSelectSlot}
+            eventPropGetter={(event) => {
+              let bgColor = ""
+              switch (event.status) {
+                case "approved":
+                  bgColor = "var(--chart-2)"
+                  break
+                case "pending":
+                  bgColor = "var(--chart-4)"
+                  break
+                case "rejected":
+                  bgColor = "var(--destructive)"
+                  break
+                case "cancelled":
+                  bgColor = "var(--muted)"
+                  break
+                default:
+                  bgColor = "lightgray"
+              }
+
+              return {
+                style: {
+                  backgroundColor: bgColor,
+                  color: event.status === "cancelled" ? "black" : "white",
+                  border: "none",
+                  borderRadius: "0.5rem",
+                },
+              }
+            }}
           />
       </div>
       {selectedSlot && (

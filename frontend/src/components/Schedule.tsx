@@ -13,6 +13,8 @@ import { useBookingStore } from '@/stores/useBookingStore'
 import { shallow } from 'zustand/shallow'
 import type { BookingEvent } from "@/types"
 import bookingTemplates from "@/templates/BookingTemplates"
+import mockBookingEvents from "@/data/events"
+import '@/index.css'
 
 const locales = {
   "en-US": enUS,
@@ -43,7 +45,7 @@ const Schedule = () => {
       <div style={{ height: '500px' }}>
         <Calendar
           localizer={localizer}
-          events={allBookings}
+          events={mockBookingEvents['tuition-class']}
           view={view}
           date={currentDate}
           onView={(newView) => setView(newView)}
@@ -53,10 +55,37 @@ const Schedule = () => {
           endAccessor="end"
           titleAccessor={(event: BookingEvent) => `${findTemplate(event.templateId)?.label}`}
           style={{ height: "100%" }}
+          eventPropGetter={(event) => {
+            let bgColor = ""
+            switch (event.status) {
+              case "approved":
+                bgColor = "var(--chart-2)"
+                break
+              case "pending":
+                bgColor = "var(--chart-4)"
+                break
+              case "rejected":
+                bgColor = "var(--destructive)"
+                break
+              case "cancelled":
+                bgColor = "var(--muted)"
+                break
+              default:
+                bgColor = "lightgray"
+            }
+
+            return {
+              style: {
+                backgroundColor: bgColor,
+                color: event.status === "cancelled" ? "black" : "white",
+                border: "none",
+                borderRadius: "0.5rem",
+              },
+            }
+          }}
         />
       </div>
     </div>
-      
   )
 }
 
