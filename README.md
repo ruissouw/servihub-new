@@ -29,14 +29,14 @@ Follow the steps below to get this project running on your local machine.
 
 1. **Clone the Repository**
    
-git clone https://github.com/ruissouw/cs50w-commerce.git
+- git clone https://github.com/ruissouw/cs50w-commerce.git
 
-cd frontend
+- cd frontend
 
 2. **Install dependencies**
    
-pnpm install
+- pnpm install
 
 3. **Start the server**
    
-pnpm dev
+- pnpm dev
