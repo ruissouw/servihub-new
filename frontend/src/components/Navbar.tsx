@@ -23,9 +23,14 @@ import {
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
 import { Link } from "react-router-dom";
+import { useNavigate } from 'react-router-dom'
+import { useUserStore } from '@/stores/userStore'
+
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const navigate = useNavigate();
+  const role = useUserStore(state => state.role)
 
   return (
     <header className="bg-white">
@@ -50,18 +55,21 @@ export default function Navbar() {
             <Bars3Icon aria-hidden="true" className="size-6" />
           </button>
         </div>
-        <PopoverGroup className="hidden lg:flex lg:gap-x-12">
-          <Link to="/" className="text-sm/6 font-semibold text-gray-900">
-            View Bookings
-          </Link>
-          <Link to="/schedule" className="text-sm/6 font-semibold text-gray-900">
-            Schedule Bookings
-          </Link>
-        </PopoverGroup>
+          {role === "customer" && (<PopoverGroup className="hidden lg:flex lg:gap-x-12">
+            <Link to="/" className="text-sm/6 font-semibold text-gray-900">
+              View Bookings
+            </Link>
+            <Link to="/schedule" className="text-sm/6 font-semibold text-gray-900">
+              Schedule Bookings
+            </Link>
+          </PopoverGroup>)}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <a href="#" className="text-sm/6 font-semibold text-gray-900">
-            Log in <span aria-hidden="true">&rarr;</span>
-          </a>
+          <button 
+            onClick={() => navigate("/login")}
+            className="text-sm/6 font-semibold text-gray-900 bg-transparent border-none cursor-pointer hover:text-gray-700"
+          >
+            Log out <span aria-hidden="true">&rarr;</span>
+          </button>
         </div>
       </nav>
       <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
