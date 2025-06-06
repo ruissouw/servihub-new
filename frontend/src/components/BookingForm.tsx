@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useBookingStore } from '@/stores/useBookingStore'
 import { useParams } from 'react-router-dom'
 import { Button } from './ui/button'
+import { useNavigate } from 'react-router-dom'
 
 
 const locales = { 'en-US': enUS }
@@ -36,6 +37,7 @@ const BookingForm: React.FC = () => {
   const { id } = useParams();
   const getBookingById = useBookingStore((state) => state.getBookingById);
   const updateBooking = useBookingStore((state) => state.updateBooking);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (id) {
@@ -156,6 +158,8 @@ const BookingForm: React.FC = () => {
       addBookings(generatedBookings);
       setSelectedSlot(null);
     }
+
+    navigate("/")
   };
 
   const filteredFields = template.fields.filter(
