@@ -16,6 +16,8 @@ import mockBookingEvents from "@/data/events"
 import '@/index.css'
 import EventView from "./EventView"
 import { Button } from "./ui/button"
+import { useUserStore } from '@/stores/userStore'
+import { X } from 'lucide-react' 
 
 const locales = {
   "en-US": enUS,
@@ -39,17 +41,26 @@ const Schedule = () => {
   const seeded = useBookingStore(state => state.seeded)
   const markSeeded = useBookingStore(state => state.markSeeded)
   const addBookings = useBookingStore((state) => state.addBookings);
+  
+    const role = useUserStore(state => state.role)
+    console.log(role);
+
+  const myBookings = useBookingStore((state) => state.bookings);
 
   useEffect(() => {
-      if (!seeded) {
-        const allMockEvents = Object.values(mockBookingEvents).flat()
-        addBookings(allMockEvents)
-        markSeeded()
-      }
-    }, [seeded, addBookings, markSeeded]
-  )
+    const allMockEvents = Object.values(mockBookingEvents).flat();
+    const existingTemplateIds = new Set(myBookings.map(e => e.templateId));
+    
+    const missingEvents = allMockEvents.filter(e => !existingTemplateIds.has(e.templateId));
+    
+    if (missingEvents.length > 0) {
+      addBookings(missingEvents);
+    }
+    }, [myBookings, addBookings]
+  );
+
+
   const updateBookingStatus = useBookingStore((state) => state.updateBookingStatus)
-  const myBookings = useBookingStore((state) => state.bookings)
 
   const handleMarkedBookings = (event: BookingEvent) => {
     if (!markedForDelete.find(e => e.id === event.id)) {
@@ -68,6 +79,10 @@ const Schedule = () => {
     setCurrentDate(new Date(event.start))
     setView("day")
   }
+
+  const onRemoveFromDeletion = (event: BookingEvent) => {
+    setMarkedForDelete(prev => prev.filter(e => e.id !== event.id));
+  };
 
   return (
     <div className="space-y-6 p-4">
@@ -120,11 +135,21 @@ const Schedule = () => {
       {markedForDelete.length > 0 && (
         <div className="mt-6 space-y-2 p-4 border rounded bg-red-50">
           <h3 className="text-lg font-semibold">Marked for Deletion</h3>
-          <ul className="list-disc pl-5 text-sm">
-            {markedForDelete.map(event => (
-              <li key={event.id}>{findTemplate(event.templateId)?.label} — {new Date(event.start).toLocaleString()}</li>
-            ))}
-          </ul>
+          {markedForDelete.map(event => (
+              <li key={event.id} className="flex">
+                  {findTemplate(event.templateId)?.label} — {new Date(event.start).toLocaleString()}
+              <button
+                  onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveFromDeletion(event);
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                  title="Remove from deletion"
+              >
+                  <X size={15} />
+              </button>
+              </li>
+          ))}
           <Button
             onClick={handleCancelAll}
             className="mt-2 px-4 py-1 rounded bg-red-600 text-white hover:bg-red-700"
