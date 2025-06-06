@@ -34,6 +34,7 @@ const DynamicForm = ({ fields, formData, setFormData }: Props) => {
                 min={field?.min}
                 max={field?.max}
                 onChange={e => handleChange(field.id, e.target.value)}
+                className="w-[300px]"
               />
             );
           case 'number':
@@ -47,6 +48,7 @@ const DynamicForm = ({ fields, formData, setFormData }: Props) => {
                 min={field?.min}
                 max={field?.max}
                 onChange={e => handleChange(field.id, e.target.valueAsNumber)}
+                className="w-[100px]"
               />
             );
           case 'textarea':
