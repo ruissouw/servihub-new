@@ -4,7 +4,7 @@ const mockBookingEvents = [
   {
     id: uuidv4(),
     templateId: 'tuition-class',
-    start: new Date('2025-06-07T10:00:00'), 
+    start: new Date('2025-06-07T09:00:00'), 
     end: new Date('2025-06-07T11:00:00'),
     status: "pending" as const,
     resourceIds: [],
@@ -17,7 +17,7 @@ const mockBookingEvents = [
   {
     id: uuidv4(),
     templateId: 'tuition-class',
-    start: new Date('2025-06-14T10:00:00'), 
+    start: new Date('2025-06-14T09:00:00'),
     end: new Date('2025-06-14T11:00:00'),
     status: "pending" as const,
     resourceIds: [],
@@ -30,7 +30,7 @@ const mockBookingEvents = [
   {
     id: uuidv4(),
     templateId: 'tuition-class',
-    start: new Date('2025-06-21T10:00:00'), 
+    start: new Date('2025-06-21T09:00:00'), 
     end: new Date('2025-06-21T11:00:00'),
     status: "pending" as const,
     resourceIds: [],
@@ -85,8 +85,8 @@ const mockBookingEvents = [
   {
     id: uuidv4(),
     templateId: 'tuition-class',
-    start: new Date("2025-06-13T09:00:00+08:00"),
-    end: new Date("2025-06-13T09:00:00+10:00"),
+    start: new Date('2025-06-13T09:00:00'),
+    end: new Date('2025-06-13T11:00:00'),
     status: "pending" as const,
     resourceIds: [],
     customFields: {
@@ -98,8 +98,8 @@ const mockBookingEvents = [
   {
     id: uuidv4(),
     templateId: 'tuition-class',
-    start: new Date("2025-06-15T09:00:00+08:00"),
-    end: new Date("2025-06-15T09:00:00+10:00"),
+    start: new Date('2025-06-15T09:00:00'),
+    end: new Date('2025-06-15T11:00:00'),
     status: "approved" as const,
     resourceIds: [],
     customFields: {
@@ -111,8 +111,8 @@ const mockBookingEvents = [
   {
     id: uuidv4(),
     templateId: 'salon-appointment',
-    start: new Date("2025-06-16T09:00:00+08:00"),
-    end: new Date("2025-06-16T09:00:00+10:00"),
+    start: new Date('2025-06-16T09:00:00'),
+    end: new Date('2025-06-16T11:00:00'),
     status: "rejected" as const,
     resourceIds: [],
     customFields: {
@@ -126,8 +126,8 @@ const mockBookingEvents = [
   {
     id: uuidv4(),
     templateId: 'salon-appointment',
-    start: new Date("2025-06-17T09:00:00+08:00"),
-    end: new Date("2025-06-17T09:00:00+10:00"),
+    start: new Date('2025-06-17T09:00:00'),
+    end: new Date('2025-06-17T11:00:00'),
     status: "cancelled" as const,
     resourceIds: [],
     customFields: {
